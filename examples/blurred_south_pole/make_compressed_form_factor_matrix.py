@@ -3,6 +3,7 @@ import scipy.sparse
 
 from flux.form_factors import get_form_factor_matrix, get_form_factor_paige, get_form_factor_sparsified
 from flux.compressed_form_factors import CompressedFormFactorMatrix, FormFactorMinDepthQuadtreeBlock
+from flux.compressed_form_factors_compare import CompressedFormFactorMatrixCompare
 from flux.shape import CgalTrimeshShapeModel, get_surface_normals
 
 import argparse
@@ -10,7 +11,7 @@ import arrow
 import os
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--compression_type', type=str, default="svd", choices=["svd", "rand_svd", "aca", "rand_id", "paige", "sparse_tol", "sparse_k", "true_model"])
+parser.add_argument('--compression_type', type=str, default="svd", choices=["svd", "rand_svd", "aca", "rand_id", "compare", "paige", "sparse_tol", "sparse_k", "true_model"])
 parser.add_argument('--max_area', type=float, default=3.0)
 parser.add_argument('--outer_radius', type=int, default=80)
 parser.add_argument('--sigma', type=float, default=5.0)
@@ -81,14 +82,14 @@ elif compression_type == "svd" or compression_type == "aca":
         args.k0)
 
 
-elif compression_type == "rand_svd" or compression_type == "rand_id":
+elif compression_type == "rand_svd" or compression_type == "rand_id" or compression_type == "compare":
     compression_params = {
         "k0": args.k0,
         "p": args.p,
         "q": args.q
     }
 
-    prefix = compression_type + "_resid" if args.add_residuals else compression_type
+    prefix = compression_type + "_resid" if (args.add_residuals and not compression_type == "compare") else compression_type
 
     savedir = "{}_{}_{}_{}_{:.0e}_{}p_{}q_{}k0".format(prefix, max_area_str, outer_radius_str, sigma_str, tol,
         args.p, args.q, args.k0)
@@ -96,7 +97,7 @@ elif compression_type == "rand_svd" or compression_type == "rand_id":
 
 
 
-if not (compression_type == "true_model" or compression_type == "paige" or compression_type == "sparse_tol" or compression_type == "sparse_k") and args.min_depth != 1:
+if not (compression_type == "true_model" or compression_type == "paige" or compression_type == "sparse_tol" or compression_type == "sparse_k" or compression_type == "compare") and args.min_depth != 1:
     savedir += "_{}mindepth".format(args.min_depth)
 
 if not (compression_type == "true_model" or compression_type == "paige" or compression_type == "sparse_tol" or compression_type == "sparse_k") and max_depth is not None:
@@ -156,6 +157,11 @@ elif args.compression_type == "sparse_k":
     path = f'results/true_{max_area_str}_{outer_radius_str}_{sigma_str}/FF_{max_area_str}_{outer_radius_str}.npz'
     full_sparse_FF = scipy.sparse.load_npz(path)
     FF = get_form_factor_sparsified(full_sparse_FF, k=args.sparse_mult*shape_model.F.shape[0])
+
+elif args.compression_type == "compare":
+    FF = CompressedFormFactorMatrixCompare(
+        shape_model, tol=tol, min_size=16384, max_depth=max_depth, compression_type=compression_type, compression_params=compression_params,
+        truncated_sparse=args.compress_sparse, add_residuals=args.add_residuals)
 
 elif args.min_depth != 1:
     FF = CompressedFormFactorMatrix(
