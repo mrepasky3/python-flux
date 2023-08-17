@@ -78,7 +78,7 @@ def plot_blocks(block, fig, **kwargs):
             child = block._blocks[i, j]
             if child.is_leaf:
                 if isinstance(child, cff.FormFactorSvdBlock) or isinstance(child, cff.FormFactorSparseSvdBlock) or \
-                isinstance(child, cff.FormFactorNmfBlock) or isinstance(child, cff.FormFactorSparseNmfBlock) or \
+                isinstance(child, cff.FormFactorNmfBlock) or isinstance(child, cff.FormFactorSparseNmfBlock) or isinstance(child, cff.FormFactorIdBlock) or \
                 isinstance(child, cff.FormFactorSparseAcaBlock) or isinstance(child, cff.FormFactorSparseBrpBlock) or isinstance(child, cff.FormFactorSparseIdBlock):
                     facecolor = 'cyan' if child.compressed else 'orange'
                     rect = patches.Rectangle(

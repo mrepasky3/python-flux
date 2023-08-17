@@ -37,6 +37,8 @@ parser.add_argument('--nmf_beta_loss', type=int, default=2, choices=[1,2])
 
 parser.add_argument('--roi', action='store_true')
 
+parser.add_argument('--compress_sparse', action='store_true')
+
 parser.add_argument('--plot_labels', action='store_true')
 
 parser.set_defaults(feature=False)
@@ -192,6 +194,9 @@ if not compression_type == "true_model" and args.min_depth != 1:
 
 if not compression_type == "true_model" and max_depth is not None:
     FF_dir += "_{}maxdepth".format(max_depth)
+
+if not compression_type == "true_model" and args.compress_sparse:
+    FF_dir += "_cs"
 
 if args.roi:
     FF_dir = "roi_" + FF_dir
