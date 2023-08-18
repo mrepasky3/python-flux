@@ -273,6 +273,17 @@ fig = plt.figure(figsize=(18, 6))  # , figsize=(18, 6))
 print(f'- {FF_path}')
 if compression_type == "compare":
     fig, ax = plot_blocks_compare(FF._root, fig)
+    
+    legend_elements = [
+        patches.Patch(facecolor='#1f77b4',label='SVD'),
+        patches.Patch(facecolor='#ff7f0e',label='SVD + Resid'),
+        patches.Patch(facecolor='#FF3936',label='ACA'),
+        patches.Patch(facecolor='#7f7f7f',label='ACA + Resid'),
+        patches.Patch(facecolor='#0CFF00',label='Random ID'),
+        patches.Patch(facecolor='#17becf',label='Random ID + Resid'),
+    ]
+    
+    ax.legend(handles=legend_elements)
 else:
     fig, ax = plot_blocks(FF._root, fig)
 if args.plot_labels:

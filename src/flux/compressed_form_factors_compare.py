@@ -120,13 +120,6 @@ class FormFactorBlockMatrixCompare(CompressedFormFactorBlock,
         nbytes_compressed_methods.append(np.inf if compressed_block_methods[-1] is None else nbytes(compressed_block_methods[-1]))
 
 
-        compressed_block_methods.append(self._get_sparse_random_svd_block(spmat, k0=k0, p=p, q=q))
-        nbytes_compressed_methods.append(np.inf if compressed_block_methods[-1] is None else nbytes(compressed_block_methods[-1]))
-
-        compressed_block_methods.append(self._get_random_svd_block(spmat, k0=k0, p=p, q=q))
-        nbytes_compressed_methods.append(np.inf if compressed_block_methods[-1] is None else nbytes(compressed_block_methods[-1]))
-
-
         compressed_block_methods.append(self._get_sparse_aca_block(spmat, k0=k0))
         nbytes_compressed_methods.append(np.inf if compressed_block_methods[-1] is None else nbytes(compressed_block_methods[-1]))
 
